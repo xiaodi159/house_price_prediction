@@ -52,6 +52,10 @@ def creat_data():
     #特征提取
     x = data.iloc[:, 1:]
     y = data.iloc[:, 0]
+
+    #添加保存输入特征类别
+    feature_names = x.columns.tolist()
+
     # values: DataFrame → ndarray
     x = x.values.astype(np.float32)
     y = y.values.astype(np.float32)
@@ -80,7 +84,9 @@ def creat_data():
     test_dataset = TensorDataset(torch.Tensor(x_test), torch.Tensor(y_test))
 
     #返回值：训练集，测试集，（映射，字典），输入特征值数字
-    return train_dataset, test_dataset, category_maps, x_train.shape[1]
+    #添加输出，特征类别， 转换器(x,和y）
+    return train_dataset, test_dataset, category_maps, x_train.shape[1], feature_names, transfer_x, transfer_y
+
 
 
 class ANN_house_price(nn.Module):
@@ -200,23 +206,65 @@ def evaluate(test_dataset, input_dim):
     print(f"R²   : {r2:.4f}")
 
 
+def predict_house_price(input_dim, feature_names, scaler_x, scaler_y, category_maps):
+    model = ANN_house_price(input_dim)
+    model.load_state_dict(torch.load('./model/ANN_house_price.pth'))
+    model.eval()
+
+    print("\n请输入房屋特征（按提示输入）：")
+    user_input = []
+
+    for feature in feature_names:
+        if feature in category_maps:
+            mapping = category_maps[feature]
+            print(f"\n特征：{feature}")
+            for k, v in mapping.items():
+                print(f"  {k} → {v}")
+            val = input("请输入类别名称：")
+            while val not in mapping:
+                val = input("请输入类别名称：")
+            user_input.append(mapping[val])
+        else:
+            val = float(input(f"{feature}（数值型）："))
+            user_input.append(val)
+
+    # 转 numpy
+    user_input = np.array(user_input).reshape(1, -1).astype(np.float32)
+
+    # X 标准化
+    user_input = scaler_x.transform(user_input)
+
+    with torch.no_grad():
+        pred_std = model(torch.tensor(user_input))
+
+    # ★★★ 反标准化 ★★★
+    pred_price = scaler_y.inverse_transform(pred_std.numpy())
+
+    print("\n==============================")
+    print(f"🏠 预测房价为：{pred_price[0][0]:,.0f}")
+    print("==============================")
+
 
 
 
 
 if __name__ == '__main__':
-    train_dataset, test_dataset, category_maps, input_dim= creat_data()
+    train_dataset, test_dataset, category_maps, input_dim, feature_names, scaler_x, scaler_y = creat_data()
     # print(category_maps)
     # print(input_dim)
+    # print(feature_names)
     # model = ANN_house_price(input_dim)
     # print(model)
 
     #模型训练
-    train(train_dataset, input_dim, 50)
+    # train(train_dataset, input_dim, 50)
 
     #模型评估
-    evaluate(test_dataset, input_dim)
+    # evaluate(test_dataset, input_dim)
 
+    #模型预测
+    # 用户交互预测
+    predict_house_price(input_dim, feature_names, scaler_x, scaler_y, category_maps)
 
 
 
