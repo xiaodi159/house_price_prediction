@@ -1,0 +1,37 @@
+Data columns (total 13 columns):
+ #   Column            Non-Null Count  Dtype
+---  ------            --------------  -----
+ 0   price             545 non-null    int64
+ 1   area              545 non-null    int64
+ 2   bedrooms          545 non-null    int64
+ 3   bathrooms         545 non-null    int64
+ 4   stories           545 non-null    int64
+ 5   mainroad          545 non-null    object
+ 6   guestroom         545 non-null    object
+ 7   basement          545 non-null    object
+ 8   hotwaterheating   545 non-null    object
+ 9   airconditioning   545 non-null    object
+ 10  parking           545 non-null    int64
+ 11  prefarea          545 non-null    object
+ 12  furnishingstatus  545 non-null    object
+dtypes: int64(6), object(7)
+
+
+data.columns
+'price',                    价格（目标值）
+'area',                     面积
+'bedrooms',                 卧室数量
+'bathrooms',                浴室数量
+'stories',                  房屋楼层数，代表建筑的总楼层数
+'mainroad',                 是否临近主干道：yes = 房屋位于主干道旁，no = 不临近
+'guestroom',                是否有客房：yes = 配备独立的客房，no = 无客房
+'basement',                 是否有地下室：yes = 带有地下室，no = 无地下室
+'hotwaterheating',          是否有热水供暖系统：yes = 配备热水供暖，no = 无
+'airconditioning',          是否有空调：yes = 配备空调，no = 无空调
+'parking',                  停车位数量，代表房屋配套的停车位个数
+'prefarea',                 是否位于优选区域 / 高档社区：yes = 位于优选区域，no = 非优选区域
+'furnishingstatus'          家具配备状态： furnished：全家具配置  semi-furnished：半家具配置  unfurnished：无家具配置
+
+
+
+
